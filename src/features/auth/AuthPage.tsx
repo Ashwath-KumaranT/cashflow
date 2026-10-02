@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase/client'
+import { getSiteUrl } from '@/lib/siteUrl'
 import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +35,7 @@ export default function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword(data)
         if (error) throw error
       } else {
-        const { error } = await supabase.auth.signUp({ ...data, options: { emailRedirectTo: window.location.origin } })
+        const { error } = await supabase.auth.signUp({ ...data, options: { emailRedirectTo: getSiteUrl() } })
         if (error) throw error
         setSuccess('Account created! Check your email to verify.')
       }
@@ -49,7 +50,7 @@ export default function AuthPage() {
     setLoading(true)
     setError(null)
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: `${window.location.origin}/auth?tab=reset`,
+      redirectTo: `${getSiteUrl()}/reset-password`,
     })
     setLoading(false)
     if (error) { setError(error.message); return }
@@ -57,11 +58,11 @@ export default function AuthPage() {
   }
 
   const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: getSiteUrl() } })
   }
 
   const signInWithGitHub = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })
+    await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: getSiteUrl() } })
   }
 
   return (

@@ -74,7 +74,7 @@ export default function Savings() {
       <form onSubmit={handleSubmit(d => createGoalMutation.mutate({ ...d, target_date: d.target_date || undefined }))} className="space-y-4">
         <div><label className="label">Goal Name</label><input {...register('name')} className="input" placeholder="Emergency Fund" />{errors.name && <p className="text-xs text-red-500 mt-1">{String(errors.name.message)}</p>}</div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="label">Target Amount (₹)</label><input {...register('target_amount')} type="number" className="input" />{errors.target_amount && <p className="text-xs text-red-500 mt-1">{String(errors.target_amount.message)}</p>}</div>
+          <div><label className="label">Target Amount (₹)</label><input {...register('target_amount')} type="number" step="any" className="input" />{errors.target_amount && <p className="text-xs text-red-500 mt-1">{String(errors.target_amount.message)}</p>}</div>
           <div><label className="label">Target Date</label><input {...register('target_date')} type="date" className="input" /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -90,7 +90,7 @@ export default function Savings() {
     const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(contribSchema), defaultValues: { goal_id: goalId, contribution_date: todayISO() } })
     return (
       <form onSubmit={handleSubmit(d => contribMutation.mutate({ ...d, goal_id: d.goal_id || null, note: d.note || undefined }))} className="space-y-4">
-        <div><label className="label">Amount (₹)</label><input {...register('amount')} type="number" className="input" />{errors.amount && <p className="text-xs text-red-500 mt-1">{String(errors.amount.message)}</p>}</div>
+        <div><label className="label">Amount (₹)</label><input {...register('amount')} type="number" step="any" className="input" />{errors.amount && <p className="text-xs text-red-500 mt-1">{String(errors.amount.message)}</p>}</div>
         <div><label className="label">Date</label><input {...register('contribution_date')} type="date" className="input" /></div>
         <div><label className="label">Note</label><input {...register('note')} className="input" placeholder="Optional note" /></div>
         <button type="submit" disabled={contribMutation.isPending} className="btn-primary w-full">{contribMutation.isPending ? 'Adding…' : 'Add Contribution'}</button>
@@ -107,7 +107,7 @@ export default function Savings() {
       })} className="space-y-4">
         <div><label className="label">Account Name</label><input {...register('name')} className="input" placeholder="HDFC Savings" />{errors.name && <p className="text-xs text-red-500 mt-1">{String(errors.name.message)}</p>}</div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="label">Balance (₹)</label><input {...register('balance')} type="number" step="0.01" className="input" /></div>
+          <div><label className="label">Balance (₹)</label><input {...register('balance')} type="number" step="any" className="input" /></div>
           <div><label className="label">Institution</label><input {...register('institution')} className="input" placeholder="HDFC Bank" /></div>
         </div>
         <div><label className="label">Note</label><input {...register('note')} className="input" /></div>

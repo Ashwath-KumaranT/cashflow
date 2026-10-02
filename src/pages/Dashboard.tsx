@@ -10,19 +10,21 @@ import { fetchInvestments } from '@/services/investments'
 import { calculateBudget, getMonthDateRange } from '@/lib/calculations/budget'
 import { formatCurrency, formatPercentage } from '@/lib/formatting/currency'
 import { useAuth } from '@/app/providers/AuthProvider'
+import { useProfile } from '@/hooks/useProfile'
 import StatCard from '@/components/ui/StatCard'
 import Modal from '@/components/ui/Modal'
 import TransactionForm from '@/components/forms/TransactionForm'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { cn } from '@/lib/utils'
+import { cn, toDateKey } from '@/lib/utils'
 import type { TransactionType } from '@/types/database'
 
 const CHART_COLORS = ['#10b981', '#3b82f6', '#f97316', '#a855f7', '#ec4899', '#eab308', '#ef4444', '#64748b']
 const today = new Date()
-const todayISO = today.toISOString().split('T')[0]
+const todayISO = toDateKey(today)
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const { data: profile } = useProfile()
   const [addModal, setAddModal] = useState<TransactionType | null>(null)
   const { start, end } = getMonthDateRange(today)
 
@@ -72,7 +74,7 @@ export default function Dashboard() {
   })
   const dailyChartData = Array.from({ length: today.getDate() }, (_, i) => {
     const d = new Date(today.getFullYear(), today.getMonth(), i + 1)
-    const dateStr = d.toISOString().split('T')[0]
+    const dateStr = toDateKey(d)
     return {
       day: format(d, 'd'),
       spent: dailySpendMap[dateStr] ?? 0,
@@ -94,7 +96,7 @@ export default function Dashboard() {
   if (txLoading) return <LoadingSpinner />
 
   const budgetVariant = budgetCalc.isOverBudget ? 'negative' : budgetCalc.percentageUsed > 80 ? 'warning' : 'positive'
-  const userName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'there'
+  const userName = profile?.full_name ?? user?.email?.split('@')[0] ?? 'there'
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
+import { toDateKey } from '@/lib/utils'
 import type { RecurringTransaction, TransactionType, RecurringFrequency } from '@/types/database'
 import { addDays, addWeeks, addMonths, addYears, parseISO } from 'date-fns'
 
@@ -11,7 +12,7 @@ export function getNextRunDate(current: string, frequency: RecurringFrequency): 
     case 'monthly': next = addMonths(date, 1); break
     case 'yearly': next = addYears(date, 1); break
   }
-  return next.toISOString().split('T')[0]
+  return toDateKey(next)
 }
 
 export async function fetchRecurringTransactions(): Promise<RecurringTransaction[]> {
@@ -47,7 +48,7 @@ export async function createRecurringTransaction(input: {
 }
 
 export async function processRecurringTransactions(): Promise<void> {
-  const today = new Date().toISOString().split('T')[0]
+  const today = toDateKey(new Date())
   const { data: due, error } = await supabase
     .from('recurring_transactions')
     .select('*')

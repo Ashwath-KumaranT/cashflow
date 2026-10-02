@@ -1,7 +1,17 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useProfile } from '@/hooks/useProfile'
+import { upsertProfile } from '@/services/profiles'
 
 type Theme = 'light' | 'dark' | 'system'
+
+const STORAGE_KEY = 'cashflow-theme'
+
+function readStoredTheme(): Theme {
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system'
+}
 
 interface ThemeContextType {
   theme: Theme
@@ -12,9 +22,11 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    return (localStorage.getItem('cashflow-theme') as Theme) ?? 'system'
-  })
+  const qc = useQueryClient()
+  const { data: profile } = useProfile()
+  // localStorage applies instantly on load; the account value is the source of
+  // truth and overrides it once fetched, so the choice follows the user's login.
+  const [theme, setThemeState] = useState<Theme>(readStoredTheme)
 
   const getResolved = (t: Theme): 'light' | 'dark' => {
     if (t === 'system') {
@@ -43,9 +55,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', handler)
   }, [theme])
 
+  const adoptedRef = useRef<Theme | null>(null)
+
+  useEffect(() => {
+    const remote = profile?.theme
+    if (!remote || adoptedRef.current === remote) return
+    adoptedRef.current = remote
+    localStorage.setItem(STORAGE_KEY, remote)
+    setThemeState(remote)
+  }, [profile?.theme])
+
   const setTheme = (t: Theme) => {
-    localStorage.setItem('cashflow-theme', t)
+    localStorage.setItem(STORAGE_KEY, t)
     setThemeState(t)
+    adoptedRef.current = t
+    // Signed-out users keep the localStorage-only preference.
+    upsertProfile({ theme: t })
+      .then(() => qc.invalidateQueries({ queryKey: ['profile'] }))
+      .catch(() => {})
   }
 
   return (

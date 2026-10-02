@@ -75,7 +75,7 @@ export default function RecurringPage() {
           ))}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="label">Amount (₹)</label><input {...register('amount')} type="number" step="0.01" className="input" />{errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}</div>
+          <div><label className="label">Amount (₹)</label><input {...register('amount')} type="number" step="any" className="input" />{errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}</div>
           <div>
             <label className="label">Category</label>
             <select {...register('category_id')} className="input"><option value="">Select</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select>

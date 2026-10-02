@@ -7,7 +7,7 @@ import { fetchMonthlyBudget } from '@/services/budgets'
 import { calculateBudget } from '@/lib/calculations/budget'
 import { formatCurrency } from '@/lib/formatting/currency'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { cn } from '@/lib/utils'
+import { cn, toDateKey } from '@/lib/utils'
 
 export default function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -19,14 +19,14 @@ export default function Calendar() {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['transactions', 'calendar', format(currentMonth, 'yyyy-MM')],
     queryFn: () => fetchTransactions({
-      startDate: monthStart.toISOString().split('T')[0],
-      endDate: monthEnd.toISOString().split('T')[0],
+      startDate: toDateKey(monthStart),
+      endDate: toDateKey(monthEnd),
     }),
   })
 
   const { data: budget } = useQuery({
-    queryKey: ['budget', monthStart.toISOString().split('T')[0]],
-    queryFn: () => fetchMonthlyBudget(monthStart.toISOString().split('T')[0]),
+    queryKey: ['budget', toDateKey(monthStart)],
+    queryFn: () => fetchMonthlyBudget(toDateKey(monthStart)),
   })
 
   const expenses = transactions.filter(t => t.type === 'expense')
@@ -46,7 +46,7 @@ export default function Calendar() {
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
   const firstDayOfWeek = getDay(monthStart)
 
-  const selectedDateStr = selectedDay?.toISOString().split('T')[0]
+  const selectedDateStr = selectedDay ? toDateKey(selectedDay) : undefined
   const selectedDayTx = transactions.filter(t => t.transaction_date === selectedDateStr)
 
   if (isLoading) return <LoadingSpinner />
@@ -77,7 +77,7 @@ export default function Calendar() {
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: firstDayOfWeek }).map((_, i) => <div key={`empty-${i}`} />)}
             {days.map(day => {
-              const dateStr = day.toISOString().split('T')[0]
+              const dateStr = toDateKey(day)
               const spend = dailySpend[dateStr] ?? 0
               const isSelected = selectedDay && isSameDay(day, selectedDay)
               const isToday = isSameDay(day, new Date())

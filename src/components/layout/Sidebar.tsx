@@ -4,6 +4,7 @@ import {
   BarChart3, Tag, PiggyBank, LineChart, FileText, Settings, RefreshCw, LogOut
 } from 'lucide-react'
 import { useAuth } from '@/app/providers/AuthProvider'
+import { useProfile } from '@/hooks/useProfile'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
 
 export default function Sidebar() {
   const { signOut, user } = useAuth()
+  const { data: profile } = useProfile()
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700">
@@ -59,10 +61,13 @@ export default function Sidebar() {
       <div className="border-t border-slate-200 dark:border-slate-700 px-3 py-4">
         <div className="flex items-center gap-3 px-3 py-2 mb-1">
           <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm font-bold">
-            {(user?.email ?? 'U')[0].toUpperCase()}
+            {(profile?.full_name ?? user?.email ?? 'U')[0].toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-slate-800 dark:text-white truncate">{user?.email}</p>
+            {profile?.full_name && (
+              <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{profile.full_name}</p>
+            )}
+            <p className="text-xs text-slate-400 truncate">{user?.email}</p>
           </div>
         </div>
         <button

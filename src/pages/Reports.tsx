@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toDateKey } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { Download } from 'lucide-react'
@@ -12,7 +13,7 @@ import { getMonthStart } from '@/lib/calculations/budget'
 export default function Reports() {
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const monthStart = getMonthStart(selectedMonth)
-  const { start, end } = { start: startOfMonth(selectedMonth).toISOString().split('T')[0], end: endOfMonth(selectedMonth).toISOString().split('T')[0] }
+  const { start, end } = { start: toDateKey(startOfMonth(selectedMonth)), end: toDateKey(endOfMonth(selectedMonth)) }
 
   const { data: transactions = [] } = useQuery({ queryKey: ['transactions', 'report', start, end], queryFn: () => fetchTransactions({ startDate: start, endDate: end }) })
   const { data: budget } = useQuery({ queryKey: ['budget', monthStart], queryFn: () => fetchMonthlyBudget(monthStart) })
@@ -53,7 +54,7 @@ export default function Reports() {
           <input
             type="month"
             value={format(selectedMonth, 'yyyy-MM')}
-            onChange={e => setSelectedMonth(new Date(e.target.value + '-01'))}
+            onChange={e => setSelectedMonth(new Date(e.target.value + '-01T00:00:00'))}
             className="input w-auto"
           />
           <button onClick={exportCSV} className="btn-secondary flex items-center gap-2 text-sm">

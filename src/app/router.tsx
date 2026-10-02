@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './providers/AuthProvider'
 import AppShell from '@/components/layout/AppShell'
 import AuthPage from '@/features/auth/AuthPage'
+import ResetPasswordPage from '@/features/auth/ResetPasswordPage'
 import Dashboard from '@/pages/Dashboard'
 import Transactions from '@/pages/Transactions'
 import Calendar from '@/pages/Calendar'
@@ -34,6 +35,9 @@ export const router = createBrowserRouter([
     element: <PublicRoute />,
     children: [{ index: true, element: <AuthPage /> }],
   },
+  // Deliberately outside PublicRoute: a recovery link creates a session, which
+  // PublicRoute would treat as "already signed in" and redirect away.
+  { path: '/reset-password', element: <ResetPasswordPage /> },
   {
     element: <ProtectedRoute />,
     children: [

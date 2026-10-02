@@ -170,7 +170,7 @@ export default function Budgets() {
         <form onSubmit={handleSubmit(d => saveMutation.mutate(d))} className="space-y-4">
           <div>
             <label className="label">Budget Amount (₹)</label>
-            <input {...register('amount')} type="number" step="100" className="input" placeholder="30000" />
+            <input {...register('amount')} type="number" step="any" className="input" placeholder="30000" />
             {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}
           </div>
           <div className="flex gap-3">

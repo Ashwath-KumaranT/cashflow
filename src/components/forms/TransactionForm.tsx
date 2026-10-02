@@ -89,7 +89,7 @@ export default function TransactionForm({ defaultType = 'expense', transaction, 
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2 sm:col-span-1">
           <label className="label">Amount (₹)</label>
-          <input {...register('amount')} type="number" step="0.01" className="input" placeholder="0.00" />
+          <input {...register('amount')} type="number" step="any" className="input" placeholder="0.00" />
           {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}
         </div>
         <div className="col-span-2 sm:col-span-1">

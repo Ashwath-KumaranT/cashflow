@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Moon, Sun, Monitor, User, Shield, Download, LogOut } from 'lucide-react'
-import { fetchProfile, upsertProfile } from '@/services/profiles'
+import { upsertProfile } from '@/services/profiles'
+import { useProfile } from '@/hooks/useProfile'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useTheme } from '@/app/providers/ThemeProvider'
 import { supabase } from '@/lib/supabase/client'
+import { getSiteUrl } from '@/lib/siteUrl'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,7 +24,7 @@ export default function Settings() {
   const [pwdStatus, setPwdStatus] = useState<string | null>(null)
   const [pwdLoading, setPwdLoading] = useState(false)
 
-  const { data: profile, isLoading } = useQuery({ queryKey: ['profile'], queryFn: fetchProfile })
+  const { data: profile, isLoading } = useProfile()
 
   const profileMutation = useMutation({
     mutationFn: ({ full_name }: { full_name: string }) => upsertProfile({ full_name }),
@@ -37,7 +39,9 @@ export default function Settings() {
   const sendPasswordReset = async () => {
     if (!user?.email) return
     setPwdLoading(true)
-    const { error } = await supabase.auth.resetPasswordForEmail(user.email, { redirectTo: window.location.origin })
+    const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+      redirectTo: `${getSiteUrl()}/reset-password`,
+    })
     setPwdStatus(error ? error.message : 'Password reset email sent!')
     setPwdLoading(false)
   }

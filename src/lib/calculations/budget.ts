@@ -1,4 +1,5 @@
-import { getDaysInMonth, getDate, startOfMonth, endOfMonth, isAfter, isBefore, isEqual } from 'date-fns'
+import { getDaysInMonth, getDate, startOfMonth, endOfMonth } from 'date-fns'
+import { toDateKey } from '@/lib/utils'
 
 export interface BudgetCalculation {
   monthlyBudget: number
@@ -65,14 +66,7 @@ export function getMonthDateRange(date: Date = new Date()): { start: string; end
   const start = startOfMonth(date)
   const end = endOfMonth(date)
   return {
-    start: start.toISOString().split('T')[0],
-    end: end.toISOString().split('T')[0],
+    start: toDateKey(start),
+    end: toDateKey(end),
   }
-}
-
-export function isDateInMonth(dateStr: string, monthDate: Date = new Date()): boolean {
-  const date = new Date(dateStr)
-  const start = startOfMonth(monthDate)
-  const end = endOfMonth(monthDate)
-  return (isAfter(date, start) || isEqual(date, start)) && (isBefore(date, end) || isEqual(date, end))
 }

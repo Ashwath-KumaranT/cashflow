@@ -56,8 +56,8 @@ function InvestmentForm({ initial, onSubmit, loading }: { initial?: Investment; 
         <div><label className="label">Purchase Date</label><input {...register('purchase_date')} type="date" className="input" /></div>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div><label className="label">Invested Amount (₹)</label><input {...register('invested_amount')} type="number" step="0.01" className="input" />{errors.invested_amount && <p className="text-xs text-red-500 mt-1">{errors.invested_amount.message}</p>}</div>
-        <div><label className="label">Current Value (₹)</label><input {...register('current_value')} type="number" step="0.01" className="input" /></div>
+        <div><label className="label">Invested Amount (₹)</label><input {...register('invested_amount')} type="number" step="any" className="input" />{errors.invested_amount && <p className="text-xs text-red-500 mt-1">{errors.invested_amount.message}</p>}</div>
+        <div><label className="label">Current Value (₹)</label><input {...register('current_value')} type="number" step="any" className="input" /></div>
       </div>
       <div><label className="label">Notes</label><input {...register('note')} className="input" placeholder="Optional notes" /></div>
       <button type="submit" disabled={loading} className="btn-primary w-full">{loading ? 'Saving…' : initial ? 'Update' : 'Add Investment'}</button>

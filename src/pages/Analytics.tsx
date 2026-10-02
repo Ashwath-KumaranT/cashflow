@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toDateKey } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
@@ -12,12 +13,12 @@ const COLORS = ['#10b981', '#3b82f6', '#f97316', '#a855f7', '#ec4899', '#eab308'
 function getRange(range: Range, customStart: string, customEnd: string): { start: string; end: string } {
   const today = new Date()
   switch (range) {
-    case 'today': return { start: today.toISOString().split('T')[0], end: today.toISOString().split('T')[0] }
-    case 'week': return { start: startOfWeek(today, { weekStartsOn: 1 }).toISOString().split('T')[0], end: endOfWeek(today, { weekStartsOn: 1 }).toISOString().split('T')[0] }
-    case 'month': return { start: startOfMonth(today).toISOString().split('T')[0], end: endOfMonth(today).toISOString().split('T')[0] }
+    case 'today': return { start: toDateKey(today), end: toDateKey(today) }
+    case 'week': return { start: toDateKey(startOfWeek(today, { weekStartsOn: 1 })), end: toDateKey(endOfWeek(today, { weekStartsOn: 1 })) }
+    case 'month': return { start: toDateKey(startOfMonth(today)), end: toDateKey(endOfMonth(today)) }
     case 'last_month': {
       const lm = subMonths(today, 1)
-      return { start: startOfMonth(lm).toISOString().split('T')[0], end: endOfMonth(lm).toISOString().split('T')[0] }
+      return { start: toDateKey(startOfMonth(lm)), end: toDateKey(endOfMonth(lm)) }
     }
     case 'custom': return { start: customStart, end: customEnd }
   }
@@ -71,8 +72,8 @@ export default function Analytics() {
   const today = new Date()
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const m = subMonths(today, 5 - i)
-    const ms = startOfMonth(m).toISOString().split('T')[0]
-    const me = endOfMonth(m).toISOString().split('T')[0]
+    const ms = toDateKey(startOfMonth(m))
+    const me = toDateKey(endOfMonth(m))
     return { month: format(m, 'MMM'), ms, me }
   })
 
